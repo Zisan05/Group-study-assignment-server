@@ -9,10 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// GroupStudy
-// YVilRPtcLA8cYbnF
-
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a3cooza.mongodb.net/?retryWrites=true&w=majority`;
 
