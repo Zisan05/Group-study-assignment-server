@@ -49,7 +49,12 @@ async function run() {
          res.send(result);
          
     })
-  
+    app.get('/assignment/:id',async(req,res) => {
+      const id = req.params.id;
+         const quary = {_id: new ObjectId(id)};
+         const result = await AssCollection.findOne(quary);
+      res.send(result);
+    })
 
     app.put('/assignment/:id',async(req,res) => {
       const id = req.params.id;
