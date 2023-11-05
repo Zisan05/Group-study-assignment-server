@@ -28,7 +28,9 @@ async function run() {
     // Create Assignment
 
     const AssCollection = client.db("GroupStudyDB").collection('Assignment');
+    const subCollection = client.db("GroupStudyDB").collection('submitAssignment');
 
+    // Create Assignment DB
     app.post('/assignment',async(req,res) => {
         const newAssignment = req.body;
         console.log(newAssignment);
@@ -74,6 +76,21 @@ async function run() {
         res.send(result);
        
      })
+
+   // Submitted Assignment DB
+
+   app.post('/submit',async(req,res) => {
+    const newSubmit = req.body;
+    console.log(newSubmit);
+    const result = await subCollection.insertOne(newSubmit);
+    res.send(result);
+})
+
+app.get('/submit',async(req,res) => {
+  const cursor = subCollection.find();
+  const result = await cursor.toArray();
+  res.send(result);
+})
 
 
     // Send a ping to confirm a successful connection
