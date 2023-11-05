@@ -56,24 +56,7 @@ async function run() {
       res.send(result);
     })
 
-     app.put('/assignment/:id',async(req,res) => {
-      const id = req.params.id;
-      const filter = {_id : new ObjectId(id)};
-      const updated = req.body;
-        const updatedAssignment = {
-          $set: {
-            title: updated.title,
-            image: updated.image,
-            description: updated.description,
-            marks: updated.marks,
-            difficulty: updated.difficulty,
-            date: updated.date
-          }
-        } 
-        const result = await AssCollection.updateOne(filter,updatedAssignment);
-        res.send(result);
-       
-     })    
+         
 
 
     // Send a ping to confirm a successful connection
