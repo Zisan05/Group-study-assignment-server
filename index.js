@@ -10,7 +10,10 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors(
   {
-    origin: ["http://localhost:5173"],
+    origin: [
+      "https://group-study-assignment.web.app",
+  "https://group-study-assignment.firebaseapp.com"
+],
     credentials:true
   }
 ));
@@ -38,6 +41,7 @@ const verify = async(req,res,next) => {
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a3cooza.mongodb.net/?retryWrites=true&w=majority`;
 
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -64,15 +68,25 @@ async function run() {
 
 app.post("/jwt",async(req,res) => {
   const body = req.body;
-  const token = jwt.sign(body, process.env.SECRET,{expiresIn : '10h'});
+  const token = jwt.sign(body, process.env.SECRET,{expiresIn : '1hr'});
    
   res.cookie('token',token,{
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: 'none'
   }).send({msg: 'success'})
-   
+})
 
+app.post('/logout',async(req,res) => {
+   const body = req.body;
+   
+  //  res.clearCookie("token",{maxAge : 0})
+  //  .send({success : true})
+  res.clearCookie("token", {
+    maxAge: 0,
+    sameSite: "none",
+    secure: true,
+}).send({ success: true })
 })
 
     //  My Assignment DB
@@ -88,9 +102,21 @@ app.post("/jwt",async(req,res) => {
     })
 
     app.get('/assignment',async(req,res) => {
+
+      console.log(req.query);
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
       const cursor = AssCollection.find();
-      const result = await cursor.toArray();
+      const result = await cursor
+      .skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result);
+    })
+
+    app.get('/assignmentCount',async(req,res) => {
+      const count = await AssCollection.estimatedDocumentCount();
+      res.send({count});
     })
 
     app.delete('/assignment/:id', async(req,res) => {
@@ -135,7 +161,7 @@ app.post("/jwt",async(req,res) => {
     res.send(result);
 })
 
-app.get('/submit',async(req,res) => {
+app.get('/submit',verify, async(req,res) => {
   const cursor = subCollection.find();
   const result = await cursor.toArray();
   res.send(result);
@@ -168,14 +194,14 @@ app.put('/submit/:id',async(req,res) => {
 
   //  My Assignment DB
 
-  app.post('/my',async(req,res) => {
+  app.post('/my', verify,async(req,res) => {
     const newSubmit = req.body;
     console.log(newSubmit);
     const result = await MyCollection.insertOne(newSubmit);
     res.send(result);
 })
 
-app.get('/my',async(req,res) => {
+app.get('/my', async(req,res) => {
   const cursor = MyCollection.find();
   const result = await cursor.toArray();
   res.send(result);
