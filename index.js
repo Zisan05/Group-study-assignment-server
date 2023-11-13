@@ -12,7 +12,8 @@ app.use(cors(
   {
     origin: [
       "https://group-study-assignment.web.app",
-  "https://group-study-assignment.firebaseapp.com"
+  "https://group-study-assignment.firebaseapp.com",
+  "http://divergent-monkey.surge.sh"
 ],
     credentials:true
   }
